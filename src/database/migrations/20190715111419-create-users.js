@@ -16,10 +16,7 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
+
       password_hash: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -33,7 +30,7 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
       },
-      update_at: {
+      updated_at: {
         type: Sequelize.DATE,
         allowNull: false,
       },
