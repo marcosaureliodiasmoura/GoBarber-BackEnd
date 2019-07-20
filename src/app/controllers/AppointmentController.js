@@ -6,6 +6,8 @@ import User from '../models/User';
 import File from '../models/File';
 import Notification from '../schemas/Notification';
 
+import Mail from '../../lib/Mail';
+
 class AppointmentController {
   // Listagem pro usuário comum
   async index(req, res) {
@@ -122,7 +124,15 @@ class AppointmentController {
 
   async delete(req, res) {
     // Faz uma busca do agendamento passado no parametro da requisição.
-    const appointment = await Appointment.findByPk(req.params.id);
+    const appointment = await Appointment.findByPk(req.params.id, {
+      include: [
+        {
+          model: User, // Coleto os dados para enviar um email pro provider
+          as: 'provider',
+          attributes: ['name', 'email'],
+        },
+      ],
+    });
 
     // Verifica se o usuário  do agendamento a ser cancelado é o mesmo que está logado.
     if (appointment.user_id !== req.userId) {
@@ -144,7 +154,15 @@ class AppointmentController {
 
     appointment.canceled_at = new Date();
 
+    // Faz o cancelamento da prestação de serviço
     await appointment.save();
+
+    // Envia email
+    await Mail.sendMail({
+      to: `${appointment.provider.name} <${appointment.provider.email}>`,
+      subject: 'Agendamento cancelado',
+      text: 'Você tem um novo cancelamento',
+    });
 
     return res.json(appointment);
   }
