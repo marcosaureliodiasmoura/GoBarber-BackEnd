@@ -23,6 +23,17 @@ class NotificationController {
 
     return res.json(notifications);
   }
+
+  // Quando o usuário visualizar uma notificação não lida, ele passará como lida.
+  async update(req, res) {
+    const notification = await Notification.findByIdAndUpdate(
+      req.params.id,
+      { read: true }, // Atualiza como lido
+      { new: true } // Retorna para o usuário
+    );
+
+    return res.json(notification);
+  }
 }
 
 export default new NotificationController();
