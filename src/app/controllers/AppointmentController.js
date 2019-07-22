@@ -147,6 +147,16 @@ class AppointmentController {
       });
     }
 
+    const appointmentCancel = await Appointment.findOne({
+      where: { id: req.params.id, canceled_at: null },
+    });
+
+    if (!appointmentCancel) {
+      return res.status(401).json({
+        error: 'This Appointment has already been canceled.',
+      });
+    }
+
     // Vou remover 2 horas do horario do agendamento
     const dateWithSub = subHours(appointment.date, 2);
 
